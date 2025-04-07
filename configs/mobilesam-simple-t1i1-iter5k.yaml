@@ -1,0 +1,91 @@
+# sam iter architecutre with simple and noise
+model: 'mobilesam-simple-t1i1-iter5k'
+task: 'mobilesam'
+resume: true
+gpus: (0,)
+dataset: 'placenta_dataset'
+fewshot_perc_list: [100]
+save_iter: 500
+eval_iter: 500
+component:
+  ft_module: 'samed' #['samed','adapter']
+  dec_module: 'none' #['knet','cmt']
+  noise_list: [0, 0, 0, 0, 0]
+  noise_version: 'none' #['v1','v2','gt']
+  maskaug: False
+  train_iter: 1
+  test_iter: 1
+visualizer: 'base' # ['base','']
+
+
+loss:
+  mask_iou_weight: [0.5, 0.0, 0.0, 1.5]
+  mask_bce_weight: [0.5, 2.0, 2.0, 0.0]
+  mask_focal_weight: [0.0, 0.0, 0.0, 0.0]
+
+network:
+  name: 'mobilesam'
+  params:
+    var: 123
+
+out_root: 'data/exp/mobilesam' # defulat: 'data/exp'
+n_gpu: 1
+deterministic: 1 # whether use deterministic during learning
+seed: 1234
+num_classes: 4
+vit_name: 'vit_b_iter' # select one vit model
+module: 'SAMed'
+img_size: 512 # same as resize
+ckpt: 'none'
+
+train:
+    # samed
+    max_iterations: 5000
+    batch_size: 8
+    base_lr: 0.0001 # segmentation network learning rate
+    is_pretrain: True
+    warup: True #If activated, warp up the learning from a lower lr to the base_lr
+    warmup_period: 50 #Warp up iterations, only valid whrn warmup is activated
+    AdamW: True # If activated, use AdamW to finetune SAM model
+    scheduler:
+      type: 'cosanneal'
+    dataset: 'placenta_dataset'
+    augment:
+      HEBDecompose:
+        use: False
+      Flip:
+        use_horizontal: True
+        use_vertical: True
+        prob_th: 0.5
+      Affine:
+        scale_range: [1.0, 1.0]
+        translate_percent: [0, 0]
+        rotate: [-360, 360]
+        shear: [0, 0]
+        p: 1.0
+      Resize:
+        size: [512, 512]
+val:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    augment:
+      HEBDecompose:
+        use: False
+      Resize:
+        size: [512, 512]
+test:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    num_classes: 4
+    input_size: 224
+    is_savevis: True # save results during test
+    augment:
+      Resize:
+        size: [ 512, 512 ]
+post:
+    required: False
+    post_types: {'heuristic':False,'equal':False}
+earlystop:
+    patience: 20
+
+

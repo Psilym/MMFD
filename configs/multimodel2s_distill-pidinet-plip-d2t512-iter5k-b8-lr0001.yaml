@@ -1,0 +1,92 @@
+# sam iter architecutre with simple and noise
+model: 'multimodel2s_distill-pidinet-plip-d2t512-iter5k-b8-lr0001'
+task: 'multimodel2s_distill'
+resume: true
+gpus: (0,)
+dataset: 'placenta_dataset'
+fewshot_perc_list: [100]
+save_iter: 500
+eval_iter: 500
+component:
+    noise_list: [0, 0, 0, 0, 0]
+    noise_version: 'none' #['v1','v2','gt']
+    train_iter: 1
+    test_iter: 1
+network_t:
+    cfg_file: 'configs/multimodel2s-pidinet-plip-d2t512-iter5k-b8.yaml'
+    model: 'multimodel2s-pidinet-plip-d2t512-iter10k-b4'
+    task: 'multimodel2s'
+    epoch: -1 # use last epoch
+
+network_s:
+  cfg_file: 'configs/mobilesam-simple-t1i1-iter5k.yaml'
+  model: 'mobilesam-simple-t1i1'
+
+loss:
+    distill_mse_weight: 10.0
+    mask_iou_weight: [0.5, 0.0, 0.0, 1.5]
+    mask_bce_weight: [0.5, 2.0, 2.0, 0.0]
+    mask_focal_weight: [0.0, 0.0, 0.0, 0.0, 0.0]
+    use_iter_loss: False
+
+out_root: 'data/exp/multimodel2s_distill' # defulat: 'data/exp'
+n_gpu: 1
+deterministic: 1 # whether use deterministic during learning
+seed: 1234
+num_classes: 4
+img_size: 512 # same as resize
+ckpt: 'none' # pretrained ckpt of sam
+
+train:
+    # samed
+    max_iterations: 5000
+    batch_size: 8
+    base_lr: 0.001 # segmentation network learning rate
+    is_pretrain: True
+    lora_ckpt: 'none' #Finetuned lora checkpoint
+    rank: 4 #Rank for LoRA adaptation
+    warup: True #If activated, warp up the learning from a lower lr to the base_lr
+    warmup_period: 50 #Warp up iterations, only valid whrn warmup is activated
+    AdamW: True # If activated, use AdamW to finetune SAM model
+    scheduler:
+      type: 'cosanneal'
+    dataset: 'placenta_dataset'
+    augment:
+      HEBDecompose:
+        use: False
+      Flip:
+        use_horizontal: True
+        use_vertical: True
+        prob_th: 0.5
+      Affine:
+        scale_range: [1.0, 1.0]
+        translate_percent: [0, 0]
+        rotate: [-360, 360]
+        shear: [0, 0]
+        p: 1.0
+      Resize:
+        size: [512, 512]
+val:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    augment:
+      HEBDecompose:
+        use: False
+      Resize:
+        size: [512, 512]
+test:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    num_classes: 4
+    is_savevis: True # save results during test
+    rank: 4
+    augment:
+      Resize:
+        size: [ 512, 512 ]
+post:
+    required: False
+    post_types: {'heuristic':False,'equal':False}
+earlystop:
+    patience: 20
+
+

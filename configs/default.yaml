@@ -1,0 +1,75 @@
+model: 'default'
+task: 'pan_seg'
+resume: true
+gpus: (0,)
+dataset: 'placenta_dataset'
+save_ep: 10
+eval_ep: 10
+idx_fold: 'no_split'
+component:
+    box_aug: {'use': True, 'scale_range': [0.7, 1.1], 'trust_out': 0.9, 'shift_range':[-0.0,0.0],'sample_method': 'box','smooth':True}
+loss: {'ct':1.0, 'init':1.0, 'pyall':0.3}
+
+network:
+    name: 'snake_pan'
+    params:
+        num_layers: 34
+        heads: {'ct_hm': 1, 'wh': 2, 'reg': 2}
+        head_conv: 256
+        down_ratio: 4
+
+train:
+    optim: 'adam'
+    lr: 1e-4
+    milestones: (80, 120, 150, 170)
+    gamma: 0.5
+    num_workers: 4
+    batch_size: 8
+    dataset: 'placenta_dataset'
+    augment:
+        RandomBrightnessContrast:
+            p: 0.5
+        AddMultipleNoise:
+            p: 0.7
+        ElasticTransform:
+            p: 0.5
+        RandomGamma:
+            p: 0.7
+        Flip:
+            use_horizontal: True
+            use_vertical: True
+            prob_th: 0.5
+        Affine:
+            scale_range: [0.7, 1.1]
+            translate_percent: [-0.3, 0.3]
+            rotate: [-360, 360]
+            shear: [-30, 30]
+            p: 1.0
+        Resize:
+            size: [512, 512]
+    epoch: 300
+val:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    augment:
+        Resize:
+            size: [512, 512]
+    ct_threshold: 0.3
+test:
+    dataset: 'placenta_dataset'
+    batch_size: 1
+    ct_threshold: 0.3
+    augment:
+        Resize:
+            size: [ 512, 512 ]
+post:
+    required: False
+    post_types: {'ct_th': False,'nms': False, 'edge_remove': False}
+earlystop:
+    patience: 20
+
+heads: {'ct_hm': 1, 'wh': 2, 'reg': 2}
+segm_or_bbox: 'segm'
+ct_threshold_vis: 0.3
+use_ct_lres: True
+
