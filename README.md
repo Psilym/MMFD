@@ -13,11 +13,11 @@ This paper proposes a <u>m</u>ulti-<u>m</u>odel <u>f</u>usion and <u>d</u>istill
 
 - WSI-level segmentation results of placental multiple functional tissues are as follows. (Medical impact: Our method can boost quantitative assessment of placental histopathology.)
 
-![](readme/WSISeg.pdf)
+![](readme/vis_wsi.png)
 
 - Architecture of MMFD
 
-![architecture](readme/MMArch.pdf)
+![architecture](readme/arch.png)
 
 ## Installation
 
