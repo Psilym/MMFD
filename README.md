@@ -9,7 +9,7 @@
 
 This paper proposes a <u>m</u>ulti-<u>m</u>odel <u>f</u>usion and <u>d</u>istillation framework **(MMFD)** which is capable of integrating multiple model encoders with various spatial resolutions and channel numbers. By fusing multiple models, such as domain expert models and fundation models, model blindness [1] is alleviated and visual embeddings are enhanced.
 
-**Note that this method can enhance performance with decreased model parameters and increased inference speed!**
+**Note that the MMFD can enhance performance with decreased model parameters and increased inference speed!**
 
 - WSI-level segmentation results of placental multiple functional tissues are as follows. (Medical impact: Our method can boost quantitative assessment of placental histopathology.)
 
@@ -57,8 +57,7 @@ data/dataset:
 │   ├── xxxxx-xxxxx-x,x-xxx-xxxx-xxxx-x-x_ins.json
 │   ├── xxxxx-xxxxx-x,x-xxx-xxxx-xxxx-x-x_seml0.png
 │   └── xxxxx-xxxxx-x,x-xxx-xxxx-xxxx-x-x_seml1.png
-├── hsi
-│   ├── xxxxx-xxxxx-x,x-xxx-xxxx-xxxx-x-x.hsi
+├── jpg
 │   └── xxxxx-xxxxx-x,x-xxx-xxxx-xxxx-x-x.jpg
 ├── meta_info.json # document annotation color
 └── splits
@@ -117,3 +116,12 @@ doi = {https://doi.org/10.1016/j.compmedimag.2024.102482},
 }
 ```
 
+## References
+
+[1] Tong, Shengbang, et al. "Eyes wide shut? exploring the visual shortcomings of multimodal llms." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2024.
+
+[2] Ma, Jun, et al. "Segment anything in medical images." *Nature Communications* 15.1 (2024): 654.
+
+[3] Huang, Zhi, et al. "A visual–language foundation model for pathology image analysis using medical twitter." *Nature medicine* 29.9 (2023): 2307-2316.
+
+[4] Su, Zhuo, et al. "Pixel difference networks for efficient edge detection." *Proceedings of the IEEE/CVF international conference on computer vision*. 2021.
